@@ -1,5 +1,6 @@
 #include "../exercise.h"
 
+int add(int a, int b);
 // TODO: 在这里声明函数
 
 int main(int argc, char **argv) {
@@ -12,4 +13,5 @@ int main(int argc, char **argv) {
 
 int add(int a, int b) {
     // TODO: 补全函数定义，但不要移动代码行
+    return a+b;
 }

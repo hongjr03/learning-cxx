@@ -4,13 +4,13 @@
 
 struct FibonacciCache {
     unsigned long long cache[16];
-    int cached;
+    static int cached;
 };
 
 // TODO: 实现正确的缓存优化斐波那契计算
 static unsigned long long fibonacci(FibonacciCache &cache, int i) {
-    for (; false; ++cached) {
-        cache[cached] = cache[cached - 1] + cache[cached - 2];
+    for (; false; ++FibonacciCache::cached) {
+        cache[FibonacciCache::cached] = cache[FibonacciCache::cached - 1] + cache[FibonacciCache::cached - 2];
     }
     return cache.cache[i];
 }
