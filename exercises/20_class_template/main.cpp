@@ -10,6 +10,8 @@ struct Tensor4D {
     Tensor4D(unsigned int const shape_[4], T const *data_) {
         unsigned int size = 1;
         // TODO: 填入正确的 shape 并计算 size
+        shape[0] = shape_[0], shape[1] = shape_[1], shape[2] = shape_[2], shape[3] = shape_[3];
+        size = shape[0] * shape[1] * shape[2] * shape[3];
         data = new T[size];
         std::memcpy(data, data_, size * sizeof(T));
     }
@@ -28,6 +30,55 @@ struct Tensor4D {
     // 则 `this` 与 `others` 相加时，3 个形状为 `[1, 2, 1, 4]` 的子张量各自与 `others` 对应项相加。
     Tensor4D &operator+=(Tensor4D const &others) {
         // TODO: 实现单向广播的加法
+
+        // for (int s1 = 0; s1 < shape[0]; s1++) {
+        //     int others_s1 = others.shape[0] == 1 ? 0 : s1;
+        //     for (int s2 = 0; s2 < shape[1]; s2++) {
+        //         int others_s2 = others.shape[1] == 1 ? 0 : s2;
+        //         for (int s3 = 0; s3 < shape[2]; s3++) {
+        //             int others_s3 = others.shape[2] == 1 ? 0 : s3;
+        //             for (int s4 = 0; s4 < shape[3]; s4++) {
+        //                 int others_s4 = others.shape[3] == 1 ? 0 : s4;
+        //                 int idx = s1 * shape[1] * shape[2] * shape[3] +
+        //                           s2 * shape[2] * shape[3] +
+        //                           s3 * shape[3] +
+        //                           s4;
+        //                 int others_idx = others_s1 * others.shape[1] * others.shape[2] * others.shape[3] +
+        //                                  others_s2 * others.shape[2] * others.shape[3] +
+        //                                  others_s3 * others.shape[3] +
+        //                                  others_s4;
+        //                 data[idx] += others.data[others_idx];
+        //             }
+        //         }
+        //     }
+        // }
+
+        int size = shape[0] * shape[1] * shape[2] * shape[3];
+
+        for (int i = 0; i < size; i++) {
+            int idx[4] = {0, 0, 0, 0};
+            int j = i;
+            for (int k = 3; k >= 0; k--) {
+                idx[k] = j % shape[k];
+                j /= shape[k];
+            }
+
+            int others_idx[4] = {0, 0, 0, 0};
+            for (int k = 0; k < 4; k++) {
+                others_idx[k] = others.shape[k] == 1 ? 0 : idx[k];
+            }
+
+            int idx_ = idx[0] * shape[1] * shape[2] * shape[3] +
+                       idx[1] * shape[2] * shape[3] +
+                       idx[2] * shape[3] +
+                       idx[3];
+            int others_idx_ = others_idx[0] * others.shape[1] * others.shape[2] * others.shape[3] +
+                              others_idx[1] * others.shape[2] * others.shape[3] +
+                              others_idx[2] * others.shape[3] +
+                              others_idx[3];
+            data[idx_] += others.data[others_idx_];
+        }
+
         return *this;
     }
 };
